@@ -14,7 +14,7 @@ namespace BackendRS.Controllers
     public class CreditCardsController : ApiController
     {
         private readonly CreditCardsService _creditCardsService;
-        public readonly string connectionString = "Data Source=sql.bsite.net\\MSSQL2016;Initial Catalog=risingstars_;User Id=risingstars_;password=QWEasd1$";
+        public readonly string connectionString = "Data Source=risingstars.mssql.somee.com;Initial Catalog=risingstars;User Id=idoandelad_SQLLogin_1;password=9ka8laa7pl";
 
 
         public CreditCardsController()

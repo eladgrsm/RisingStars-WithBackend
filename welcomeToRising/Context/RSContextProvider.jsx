@@ -6,8 +6,10 @@ export default function RSContextProvider(props) {
   const [businessPlan, setBusinessPlan] = useState("");
   const [businessRegister, setBusinessRegister] = useState({});
   const [artistsRegister, setArtistsRegister] = useState({});
-  const [saveRandomNumber , setSaveRandomNumber] = useState(0)
+  const [saveRandomNumber, setSaveRandomNumber] = useState(0);
   const [showMainArtistScreen, setShowMainArtistScreen] = useState(false);
+  const [showMainBusinessScreen, setShowMainBusinessScreen] = useState(false);
+  const [emailAfterLogin, setEmailAfterLogin] = useState("");
 
   return (
     <RSContext.Provider
@@ -21,7 +23,11 @@ export default function RSContextProvider(props) {
         setSaveRandomNumber,
         saveRandomNumber,
         setShowMainArtistScreen,
-        showMainArtistScreen
+        showMainArtistScreen,
+        emailAfterLogin,
+        setEmailAfterLogin,
+        showMainBusinessScreen,
+        setShowMainBusinessScreen,
       }}
     >
       {props.children}

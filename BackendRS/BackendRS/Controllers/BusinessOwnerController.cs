@@ -13,7 +13,7 @@ namespace BackendRS.Controllers
     public class BusinessOwnerController : ApiController
     {
         private readonly BusinessService _businessService;
-        public readonly string connectionString = "Data Source=sql.bsite.net\\MSSQL2016;Initial Catalog=risingstars_;User Id=risingstars_;password=QWEasd1$";
+        public readonly string connectionString = "Data Source=risingstars.mssql.somee.com;Initial Catalog=risingstars;User Id=idoandelad_SQLLogin_1;password=9ka8laa7pl";
 
 
         public BusinessOwnerController()
@@ -41,5 +41,28 @@ namespace BackendRS.Controllers
                 return InternalServerError();
             }
         }
+
+
+        [HttpPost]
+        [Route("signin")]
+        public IHttpActionResult SignIn(Artists credentials)
+        {
+            if (credentials == null || string.IsNullOrEmpty(credentials.Email) || string.IsNullOrEmpty(credentials.Password))
+            {
+                return BadRequest("Sign-in credentials are missing.");
+            }
+
+            bool signInResult = _businessService.SignIn(credentials.Email, credentials.Password);
+
+            if (signInResult)
+            {
+                return Ok("Sign-in successful.");
+            }
+            else
+            {
+                return BadRequest("Sign-in unsuccessful. Invalid credentials.");
+            }
+        }
+
     }
 }

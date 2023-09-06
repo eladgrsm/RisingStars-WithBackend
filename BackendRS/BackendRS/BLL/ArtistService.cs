@@ -22,6 +22,11 @@ namespace BackendRS.BLL
             return _artistRepository.UpsertArtist(artist);
         }
 
+        public bool UpdateArtist(Artists artist)
+        {
+            return _artistRepository.UpdateArtist(artist);
+        }
+
 
         public List<Artists> GetAllArtists()
         {
@@ -31,6 +36,17 @@ namespace BackendRS.BLL
         public bool SignIn(string email, string password)
         {
             return _artistRepository.SignIn(email, password);
+        }
+
+        public List<string> GetAllCities()
+        {
+            return _artistRepository.GetAllCities();
+        }
+
+
+        public List<Artists> GetAllArtistData(string email)
+        {
+            return _artistRepository.GetAllArtistData(email);
         }
     }
 }

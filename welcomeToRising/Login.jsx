@@ -20,8 +20,12 @@ import { RSContext } from "./Context/RSContextProvider";
 export default function Login({ navigation }) {
   LogBox.ignoreAllLogs();
 
-  const { setShowMainArtistScreen, showMainArtistScreen } =
-    useContext(RSContext);
+  const {
+    setShowMainArtistScreen,
+    showMainArtistScreen,
+    setEmailAfterLogin,
+    setShowMainBusinessScreen,
+  } = useContext(RSContext);
 
   const [fetchInputs, setFetchInputs] = useState({
     email: "",
@@ -35,7 +39,6 @@ export default function Login({ navigation }) {
       return;
     }
 
-    console.log("enter to second catch");
     try {
       const response = await fetch(API_URL + "artists/signin", {
         method: "POST",
@@ -47,26 +50,32 @@ export default function Login({ navigation }) {
 
       if (response.ok) {
         setShowMainArtistScreen(true);
+        setEmailAfterLogin(fetchInputs.email);
         console.log(showMainArtistScreen);
         Alert.alert("Signed In Successfully");
-        navigation.navigate("MainArtistScreen");
+      } else {
+        if (response.status === 401) {
+          throw new Error("Unauthorized"); // Or any other custom error message
+        } else {
+          throw new Error("Failed to sign-in");
+        }
       }
     } catch (error) {
+      console.log("enter to the catch of business");
       try {
-        const response = await fetch(
-          "http://10.57.0.122:5500/api/business/signin",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(fetchInputs),
-          }
-        );
+        const response = await fetch(API_URL + "business/signin", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(fetchInputs),
+        });
 
         if (response.ok) {
+          console.log("we success to get over the response");
+          setShowMainBusinessScreen(true);
+          setEmailAfterLogin(fetchInputs.email);
           Alert.alert("Signed In Successfully");
-          navigation.navigate("WelcomeScreen");
         }
       } catch (error) {
         try {

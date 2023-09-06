@@ -46,5 +46,32 @@ namespace BackendRS.DAL
                 return false;
             }
         }
+
+
+        public bool SignIn(string email, string password)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("SELECT dbo.checkSignBusiness(@Email, @Password)", connection))
+                    {
+                        command.Parameters.AddWithValue("@Email", email);
+                        command.Parameters.AddWithValue("@Password", password);
+
+                        int signInResult = (int)command.ExecuteScalar();
+
+                        return signInResult == 1;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle exception if needed
+                return false;
+            }
+        }
     }
 }

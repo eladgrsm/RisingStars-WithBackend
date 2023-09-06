@@ -21,6 +21,10 @@ namespace BackendRS.BLL
             return _businessRepository.UpsertBusinessOwner(business);
         }
 
+        public bool SignIn(string email, string password)
+        {
+            return _businessRepository.SignIn(email, password);
+        }
 
     }
 }

@@ -13,7 +13,7 @@ namespace BackendRS.Controllers
     public class ArtistsController : ApiController
     {
         private readonly ArtistService _artistService;
-        public readonly string connectionString = "Data Source=sql.bsite.net\\MSSQL2016;Initial Catalog=risingstars_;User Id=risingstars_;password=QWEasd1$";
+        public readonly string connectionString = "Data Source=risingstars.mssql.somee.com;Initial Catalog=risingstars;User Id=idoandelad_SQLLogin_1;password=9ka8laa7pl";
 
 
         public ArtistsController()
@@ -42,9 +42,30 @@ namespace BackendRS.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("updateInfo")]
+        public IHttpActionResult UpdateArtist(Artists artist)
+        {
+            if (artist == null)
+            {
+                return BadRequest("Artist data is missing.");
+            }
+
+            bool result = _artistService.UpdateArtist(artist);
+
+            if (result)
+            {
+                return Ok("Artist updated successfully.");
+            }
+            else
+            {
+                return InternalServerError();
+            }
+        }
+
 
         [HttpGet]
-        [Route("getall")]
+        [Route("getallArtists")]
         public IHttpActionResult GetAllArtists()
         {
             List<Artists> artists = _artistService.GetAllArtists();
@@ -59,6 +80,42 @@ namespace BackendRS.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("getartistdata")]
+        public IHttpActionResult GetArtistData(Artists credentials)
+        {
+            if (string.IsNullOrEmpty(credentials.Email))
+            {
+                return BadRequest("Email parameter is missing.");
+            }
+
+            List<Artists> artistData = _artistService.GetAllArtistData(credentials.Email);
+
+            if (artistData.Count > 0)
+            {
+                return Ok(artistData);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
+        [HttpGet]
+        [Route("getallCities")]
+        public IHttpActionResult GetAllCities()
+        {
+            List<string> cities = _artistService.GetAllCities();
+            if(cities != null  && cities.Count > 0)
+            {
+                return Ok(cities);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
 
         [HttpPost]
         [Route("signin")]

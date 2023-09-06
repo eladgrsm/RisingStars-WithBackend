@@ -21,6 +21,7 @@ import Profile from "./welcomeToRising/AfterLoginArtists/Profile";
 import Statics from "./welcomeToRising/AfterLoginArtists/Statics";
 import Help from "./welcomeToRising/AfterLoginArtists/Help";
 import Logout from "./welcomeToRising/AfterLoginArtists/Logout";
+import MainBusinessScreen from "./welcomeToRising/AfterLoginBusiness/MainBusinessScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -34,11 +35,12 @@ export default function App() {
 }
 
 function AppNavigator() {
-  const { showMainArtistScreen } = React.useContext(RSContext);
+  const { showMainArtistScreen, showMainBusinessScreen } =
+    React.useContext(RSContext);
 
-  return (
-    <NavigationContainer>
-      {showMainArtistScreen ? (
+  const renderAdditionalScreens = () => {
+    if (showMainArtistScreen) {
+      return (
         <Drawer.Navigator initialRouteName="MainArtistScreen">
           <Drawer.Screen
             name="My Shows"
@@ -53,7 +55,12 @@ function AppNavigator() {
           <Drawer.Screen
             name="Profile"
             component={Profile}
-            options={{ headerShown: true }}
+            options={{
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: "#ba99b6",
+              },
+            }}
           />
           <Drawer.Screen
             name="Statics"
@@ -71,6 +78,54 @@ function AppNavigator() {
             options={{ headerShown: true }}
           />
         </Drawer.Navigator>
+      );
+    } else {
+      return (
+        <Drawer.Navigator initialRouteName="MainArtistScreen">
+          <Drawer.Screen
+            name="Home"
+            component={MainBusinessScreen}
+            options={{
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: "#86a6d9",
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="Profile"
+            component={Profile}
+            options={{
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: "#ba99b6",
+              },
+            }}
+          />
+          <Drawer.Screen
+            name="Statics"
+            component={Statics}
+            options={{ headerShown: true }}
+          />
+          <Drawer.Screen
+            name="Help"
+            component={Help}
+            options={{ headerShown: true }}
+          />
+          <Drawer.Screen
+            name="Logout"
+            component={Logout}
+            options={{ headerShown: true }}
+          />
+        </Drawer.Navigator>
+      );
+    }
+  };
+
+  return (
+    <NavigationContainer>
+      {showMainArtistScreen || showMainBusinessScreen ? (
+        renderAdditionalScreens()
       ) : (
         <Stack.Navigator>
           <Stack.Screen

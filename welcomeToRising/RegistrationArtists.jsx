@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -24,6 +24,9 @@ import * as ImagePicker from "expo-image-picker";
 import { errormessage } from "./common/formcss";
 import { RSContext } from "./Context/RSContextProvider";
 import PushNotification from "./PushNotification";
+import { originalData } from "../Cities";
+import { API_URL } from "../variables";
+import { Picker } from "@react-native-picker/picker";
 
 export default function RegistrationArtists({ navigation }) {
   const [pickedImagePath, setPickedImagePath] = useState("");
@@ -32,6 +35,42 @@ export default function RegistrationArtists({ navigation }) {
   const { setArtistsRegister, artistsRegister } = useContext(RSContext);
 
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState("");
+  const [searchText, setSearchText] = useState("");
+
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setFetchData({ ...fetchData, city: city });
+  };
+
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+  };
+
+  const filteredCities = cities.filter((city) =>
+    city.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  useEffect(async () => {
+    fetchCities();
+  }, []);
+
+  const fetchCities = async () => {
+    try {
+      const response = await fetch(API_URL + "artists/getallCities"); // Replace with your API endpoint
+      if (response.ok) {
+        const citiesData = await response.json();
+        console.log(citiesData);
+        setCities(citiesData);
+      } else {
+        console.error("Error fetching cities:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
 
   // Function to open the modal
   const openModal = () => {
@@ -253,16 +292,30 @@ export default function RegistrationArtists({ navigation }) {
             />
           </View>
 
-          <Text style={styles.email}>City:</Text>
           <View style={styles.emailContainer}>
-            <TextInput
-              placeholder="Netanya,Tel Aviv, etc..."
-              style={styles.emailInput}
-              onPressIn={() => setErrormsg(null)}
-              onChangeText={(text) =>
-                setFetchData({ ...fetchData, city: text })
-              }
-            />
+            <View style={styles.containerCities}>
+              {selectedCity ? (
+                <Text>You selected: {selectedCity}</Text>
+              ) : (
+                <Text>Please select a city</Text>
+              )}
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search for a city..."
+                value={searchText}
+                onChangeText={handleSearchChange}
+              />
+              <Picker
+                style={styles.picker}
+                selectedValue={selectedCity}
+                onValueChange={handleCityChange}
+              >
+                <Picker.Item label="Select a city" value="" />
+                {filteredCities.map((city, index) => (
+                  <Picker.Item key={index} label={city} value={city} />
+                ))}
+              </Picker>
+            </View>
           </View>
           <Text style={styles.email}>Password:</Text>
 
@@ -353,7 +406,7 @@ export default function RegistrationArtists({ navigation }) {
             >
               <Text style={styles.closeModalText}>Close</Text>
             </TouchableOpacity>
-            <PushNotification navigation={navigation} closeModal={closeModal}/>
+            <PushNotification navigation={navigation} closeModal={closeModal} />
           </View>
         </Modal>
       </View>
@@ -500,5 +553,25 @@ const styles = StyleSheet.create({
   closeModalText: {
     color: "red",
     fontSize: 18,
+  },
+  containerCities: {
+    flex: 1,
+    padding: 20,
+    borderColor: "gray",
+  },
+  searchInput: {
+    marginBottom: 10,
+    padding: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#fff",
+  },
+  picker: {
+    marginBottom: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "#fff",
   },
 });

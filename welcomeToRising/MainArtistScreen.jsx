@@ -9,13 +9,10 @@ import {
   Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDrawerStatus } from "@react-navigation/drawer";
 import WeeklyCalendar from "./AfterLoginArtists/WeeklyCalendar";
 
 export default function MainArtistScreen() {
   const nav = useNavigation();
-  const drawerStatus = useDrawerStatus();
-  console.log(drawerStatus);
 
   return (
     <View style={styles.container}>
