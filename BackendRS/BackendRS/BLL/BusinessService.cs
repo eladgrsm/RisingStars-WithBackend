@@ -26,5 +26,11 @@ namespace BackendRS.BLL
             return _businessRepository.SignIn(email, password);
         }
 
+        public bool AddSHow(ShowDetails showDetails)
+        {
+            return _businessRepository.AddSHow(showDetails);
+        }
+
+
     }
 }

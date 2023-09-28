@@ -103,7 +103,7 @@ function AppNavigator() {
             }}
           />
           <Drawer.Screen
-            name="Statics"
+            name="Upcoming"
             component={Statics}
             options={{ headerShown: true }}
           />

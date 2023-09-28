@@ -47,6 +47,31 @@ namespace BackendRS.DAL
             }
         }
 
+        public bool AddSHow(ShowDetails showDetails)
+        {
+            try
+            {
+                using(SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+                    using(SqlCommand command = new SqlCommand("AddShowDetails", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@SelectedDate", showDetails.SelectedDate);
+                        command.Parameters.AddWithValue("@StartTime", showDetails.StartTime);
+                        command.Parameters.AddWithValue("@CrowdCapacity", showDetails.CrowdCapacity);
+                        command.Parameters.AddWithValue("@Price", showDetails.Price);
+                        command.Parameters.AddWithValue("@BusinessOwnerEmail", showDetails.BusinessOwnerEmail);
+
+                        return command.ExecuteNonQuery() > 0;
+                    }
+                }
+            }catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
 
         public bool SignIn(string email, string password)
         {

@@ -79,16 +79,13 @@ export default function Login({ navigation }) {
         }
       } catch (error) {
         try {
-          const response = await fetch(
-            "http://10.57.0.122:5500/api/admin/signin",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(fetchInputs),
-            }
-          );
+          const response = await fetch(API_URL + "admin/signin", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(fetchInputs),
+          });
 
           if (response.ok) {
             console.log("third step");

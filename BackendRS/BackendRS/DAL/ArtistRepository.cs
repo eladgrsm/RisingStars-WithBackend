@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BackendRS.Models;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using System.Windows.Forms;
 
 namespace BackendRS.DAL
 {
@@ -174,7 +175,7 @@ namespace BackendRS.DAL
             }
             catch (Exception ex)
             {
-                // Handle exceptions here
+                MessageBox.Show(ex.ToString());
             }
 
             return artistData;

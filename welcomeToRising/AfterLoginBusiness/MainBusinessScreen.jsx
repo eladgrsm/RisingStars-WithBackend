@@ -12,7 +12,6 @@ import {
   TextInput,
 } from "react-native";
 import DateCalendar from "./DateCalendar";
-import TimePickerBusiness from "./TimePickerBusiness";
 
 export default function MainBusinessScreen() {
   const currentDate = new Date();
@@ -67,10 +66,10 @@ export default function MainBusinessScreen() {
         onRequestClose={closePopup}
       >
         <View style={styles.popupContainer} {...panResponder.panHandlers}>
-          {/* Your popup content goes here */}
           <DateCalendar />
-          <TimePickerBusiness />
-          <Text>Swipe down to close</Text>
+          <View>
+            <Text style={styles.startTime}>From Time</Text>
+          </View>
         </View>
       </Modal>
     </View>

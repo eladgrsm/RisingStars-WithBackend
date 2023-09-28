@@ -64,5 +64,27 @@ namespace BackendRS.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("addShow")]
+        public IHttpActionResult AddShow(ShowDetails showDetails)
+        {
+            if (showDetails == null)
+            {
+                return BadRequest("Details are missing.");
+            }
+
+            bool result = _businessService.AddSHow(showDetails);
+
+            if (result)
+            {
+                return Ok("Show added successfully.");
+            }
+            else
+            {
+                return InternalServerError();
+            }
+        }
+
     }
 }

@@ -118,7 +118,7 @@ export default function Profile({ navigation }) {
 
   const fetchCities = async () => {
     try {
-      const response = await fetch(API_URL + "artists/getallCities"); // Replace with your API endpoint
+      const response = await fetch(API_URL + "artists/getallCities"); 
       if (response.ok) {
         const citiesData = await response.json();
         setCities(citiesData);
