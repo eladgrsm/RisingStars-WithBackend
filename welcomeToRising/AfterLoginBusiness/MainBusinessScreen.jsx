@@ -49,7 +49,7 @@ export default function MainBusinessScreen() {
       <View style={styles.todayShowContainer}>
         <Text style={styles.titleShow}>Today Show:</Text>
         <Text style={styles.currentDate}>{`${day}/${month}/${year}`}</Text>
-        <Text style={styles.titleTimeAndArtist}>training time:</Text>
+        <Text style={styles.titleTimeAndArtist}>starting time:</Text>
         <Text style={styles.titleTimeAndArtist}>Artist:</Text>
       </View>
       <TouchableOpacity onPress={openPopup}>

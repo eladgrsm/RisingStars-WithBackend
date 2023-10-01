@@ -1,94 +1,105 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Modal, Text, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { Calendar } from "react-native-calendars";
+import { API_URL } from "../../variables";
+import { RSContext } from "../Context/RSContextProvider";
 
 export default function Statics() {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
-  const [showDetailsModalVisible, setShowDetailsModalVisible] = useState(false);
   const [selectedShowDetails, setSelectedShowDetails] = useState(null);
-
-  // Sample show data (replace with your actual data)
-  const showData = [
-    {
-      SelectedDate: "2023-09-10",
-      StartTime: "10:00:00",
-      CrowdCapacity: 50,
-      Price: 25.0,
-      BusinessOwnerEmail: "owner1@example.com",
-      ShowDetails: "This is the details for Show 1",
-    },
-    {
-      SelectedDate: "2023-09-15",
-      StartTime: "14:00:00",
-      CrowdCapacity: 30,
-      Price: 30.0,
-      BusinessOwnerEmail: "owner2@example.com",
-      ShowDetails: "This is the details for Show 2",
-    },
-    // Add more show data as needed
-  ];
+  const { emailAfterLogin } = useContext(RSContext);
+  const [showDetails, setShowDetails] = useState([]);
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
-    // Process the show data and build marked dates
-    const markedDatesObject = {};
+    const fetchData = async () => {
+      try {
+        const response = await fetch(API_URL + "business/detailsShow", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            BusinessOwnerEmail: emailAfterLogin,
+          }),
+        });
 
-    showData.forEach((item) => {
-      const date = item.SelectedDate;
-      markedDatesObject[date] = { selected: true, selectedColor: "red" };
-    });
+        if (response.ok) {
+          const data = await response.json();
 
-    setMarkedDates(markedDatesObject);
-  }, []);
+          if (data && data.length > 0) {
+            setShowDetails(data);
+
+            const markedDatesObject = {};
+
+            data.forEach((item) => {
+              const date = item.SelectedDate;
+              markedDatesObject[date] = {
+                selected: true,
+                selectedColor: "red",
+              };
+            });
+
+            setMarkedDates(markedDatesObject);
+          }
+        } else {
+          console.error("Error fetching data:", response.status);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); // Set loading to false regardless of success or failure
+      }
+    };
+
+    fetchData();
+  }, [emailAfterLogin]);
 
   const onDayPress = (day) => {
+
     const formattedSelectedDate = day.dateString; // Format selected date as 'YYYY-MM-DD'
 
-    // Check if the selected date has show data
-    const selectedShow = showData.find(
-      (item) => item.SelectedDate === formattedSelectedDate
-    );
+    const showsOnSelectedDate = showDetails
+      .filter((item) => item.SelectedDate === formattedSelectedDate)
+      .sort((a, b) => a.StartTime.localeCompare(b.StartTime)); // Sort by start time
 
-    if (selectedShow) {
+    if (showsOnSelectedDate.length > 0) {
       // Construct a message with all the show details
-      const showDetailsMessage = `
-        Date: ${selectedShow.SelectedDate}
-        Start Time: ${selectedShow.StartTime}
-        Crowd Capacity: ${selectedShow.CrowdCapacity}
-        Price: $${selectedShow.Price.toFixed(2)}
-      `;
+      const showDetailsMessage = showsOnSelectedDate.map((show) => (
+        <View key={show.Id} style={styles.showContainer}>
+          <Text>Title: {show.TitleShow}</Text>
+          <Text>Date: {show.SelectedDate}</Text>
+          <Text>Start Time: {show.StartTime}</Text>
+          <Text>Crowd Capacity: {show.CrowdCapacity}</Text>
+          <Text>Price: ${show.Price.toFixed(2)}</Text>
+        </View>
+      ));
 
       setSelectedShowDetails(showDetailsMessage);
-      setShowDetailsModalVisible(true);
     } else {
-      setShowDetailsModalVisible(false);
+      setSelectedShowDetails(null);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Calendar markedDates={markedDates} onDayPress={onDayPress} />
+      {loading ? (
+        // Show a loading indicator while data is being fetched
+        <Text>Loading...</Text>
+      ) : (
+        // Render the calendar and show details once data is fetched
+        <>
+          <Calendar markedDates={markedDates} onDayPress={onDayPress} />
 
-      {/* Show Details Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showDetailsModalVisible}
-        onRequestClose={() => setShowDetailsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Show Details</Text>
-            <Text style={styles.modalText}>{selectedShowDetails}</Text>
-            <TouchableOpacity
-              style={styles.modalCloseButton}
-              onPress={() => setShowDetailsModalVisible(false)}
-            >
-              <Text style={styles.modalCloseButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+          {selectedShowDetails && (
+            <ScrollView style={styles.showDetails}>
+              <Text style={styles.showDetailsTitle}>Show Details</Text>
+              <View style={styles.showDetailsBox}>{selectedShowDetails}</View>
+            </ScrollView>
+          )}
+        </>
+      )}
     </View>
   );
 }
@@ -98,35 +109,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
+  showDetails: {
     padding: 20,
-    borderRadius: 10,
-    width: "80%",
-    alignItems: "center",
   },
-  modalTitle: {
+  showDetailsTitle: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
   },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  modalCloseButton: {
-    backgroundColor: "red",
+  showDetailsBox: {
+    borderColor: "gray",
+    borderRadius: 10,
     padding: 10,
-    borderRadius: 5,
   },
-  modalCloseButtonText: {
-    color: "white",
-    fontWeight: "bold",
+  showContainer: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  showDetailsText: {
+    fontSize: 16,
   },
 });

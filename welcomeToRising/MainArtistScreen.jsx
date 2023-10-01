@@ -17,18 +17,19 @@ export default function MainArtistScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.weeklyTitle}>
-        <Text>Weekly Calendar</Text>
+        <Text>Upcoming Information</Text>
       </View>
-      <View style={styles.calendar}>
-        <WeeklyCalendar />
+      <View style={styles.notifiction}></View>
+      <View style={styles.TodayShow}>
+        <Text>Today Show:</Text>
       </View>
+      <Text style={styles.availableShow}>Click here to see available shows:</Text>
       <TouchableOpacity style={styles.centeredCircleButton}>
         <View style={styles.circleImage}>
           <Image
-            source={require("../assets/redilosion.jpg")}
+            source={require("../assets/Golden_star.svg.png")}
             style={styles.circleImage}
           />
-          <Text style={styles.circleText}>Shows</Text>
         </View>
       </TouchableOpacity>
       <StatusBar style="auto" />
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   weeklyTitle: {
-    width: "70%",
+    width: "80%",
     padding: 15,
     backgroundColor: "#D9D9D9",
     alignItems: "center",
@@ -56,10 +57,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.65,
     shadowRadius: 3.84,
   },
-  calendar: {
-    flex: 1,
-    paddingTop: 20,
-  },
   centeredCircleButton: {
     alignItems: "center",
     position: "absolute",
@@ -67,10 +64,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   circleImage: {
-    width: 150, 
-    height: 150,
-    borderRadius: 90, 
-    backgroundColor: "blue", 
+    width: 160,
+    height: 160,
+    borderRadius: 90,
+    backgroundColor: "grey",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -90,4 +87,24 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     bottom: 45,
   },
+  notifiction: {
+    borderWidth: 1,
+    width: "80%",
+    height: 100,
+    borderRadius: 20,
+    marginTop: 25,
+    backgroundColor: "#faf3f2",
+  },
+  TodayShow: {
+    borderWidth: 1,
+    width: "80%",
+    height: 150,
+    borderRadius: 20,
+    marginTop: 25,
+    backgroundColor: "#faf3f2",
+    alignItems: "center",
+  },
+  availableShow: {
+    marginTop: 80,
+  }
 });

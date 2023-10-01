@@ -32,5 +32,11 @@ namespace BackendRS.BLL
         }
 
 
+        public List<ShowDetails> GetShowDetailsByEmail(string email)
+        {
+            return _businessRepository.GetShowDetailsByEmail(email);
+        }
+
+
     }
 }

@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Windows.Forms;
 
 namespace BackendRS.DAL
 {
@@ -62,6 +63,8 @@ namespace BackendRS.DAL
                         command.Parameters.AddWithValue("@CrowdCapacity", showDetails.CrowdCapacity);
                         command.Parameters.AddWithValue("@Price", showDetails.Price);
                         command.Parameters.AddWithValue("@BusinessOwnerEmail", showDetails.BusinessOwnerEmail);
+                        command.Parameters.AddWithValue("@TitleShow", showDetails.TitleShow);
+                        command.Parameters.AddWithValue("@Description", showDetails.Description);
 
                         return command.ExecuteNonQuery() > 0;
                     }
@@ -71,6 +74,118 @@ namespace BackendRS.DAL
                 return false;
             }
         }
+
+        public List<Business> GetAllArtistData(string email)
+        {
+            List<Business> businessData = new List<Business>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetUserData", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@email", email));
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string PlanBusiness = reader.GetString(1);
+                                string BusinessName = reader.GetString(2);
+                                string City = reader.GetString(3);
+                                string phoneNumber = reader.GetString(4);
+                                string Email = reader.GetString(5);
+                                string password = reader.GetString(6);
+                                string KindOfArtistToShow = reader.GetString(7);
+                                string Logo = reader.GetString(8);
+
+                                Business business = new Business
+                                {
+                                    PlanBusiness = PlanBusiness,
+                                    BusinessName = BusinessName,
+                                    City = City,
+                                    PhoneNumber = phoneNumber,
+                                    Email = Email,
+                                    Password = password,
+                                    KindOfArtistToShow = KindOfArtistToShow,
+                                    Logo = Logo
+                                };
+
+                                businessData.Add(business);
+                            }
+
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            return businessData;
+        }
+
+        public List<ShowDetails> GetShowDetailsByEmail(string email)
+        {
+            List<ShowDetails> showDetailsData = new List<ShowDetails>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetShowDataByEmail", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@Email", email)); // Use the correct parameter name from your stored procedure
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string SelectedDate = reader.GetDateTime(1).ToString("yyyy-MM-dd");
+                                string StartTime = reader.GetTimeSpan(2).ToString();
+                                int CrowdCapacity = reader.GetInt32(3);
+                                decimal Price = reader.GetDecimal(4);
+                                string BusinessOwnerEmail = reader.GetString(5);
+                                string TitleShow = reader.GetString(6);
+                                string Description = reader.GetString(7);
+
+                                // Create a ShowDetails object or use a different class if needed
+                                ShowDetails showDetail = new ShowDetails
+                                {
+                                    SelectedDate = SelectedDate,
+                                    StartTime = StartTime,
+                                    CrowdCapacity = CrowdCapacity,
+                                    Price = Price,
+                                    BusinessOwnerEmail = BusinessOwnerEmail,
+                                    TitleShow = TitleShow,
+                                    Description = Description
+                                };
+
+                                showDetailsData.Add(showDetail);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+
+            return showDetailsData;
+        }
+
 
 
         public bool SignIn(string email, string password)

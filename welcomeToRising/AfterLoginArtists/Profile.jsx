@@ -76,8 +76,25 @@ export default function Profile({ navigation }) {
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
+      try {
+        const response = await fetch(API_URL + "/artists/getartistdata", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Email: email }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+      }
     }
   };
 
@@ -118,7 +135,7 @@ export default function Profile({ navigation }) {
 
   const fetchCities = async () => {
     try {
-      const response = await fetch(API_URL + "artists/getallCities"); 
+      const response = await fetch(API_URL + "artists/getallCities");
       if (response.ok) {
         const citiesData = await response.json();
         setCities(citiesData);

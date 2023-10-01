@@ -86,5 +86,30 @@ namespace BackendRS.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("detailsShow")]
+        public IHttpActionResult ShowDetails(ShowDetails showDetails)
+        {
+            string email = showDetails.BusinessOwnerEmail;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Email parameter is missing.");
+            }
+
+            List<ShowDetails> showData = _businessService.GetShowDetailsByEmail(email);
+
+
+            if (showData.Count > 0)
+            {
+                return Ok(showData);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
     }
 }

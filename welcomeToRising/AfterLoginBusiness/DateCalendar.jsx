@@ -17,10 +17,17 @@ import { getFormatedDate } from "react-native-modern-datepicker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { API_URL } from "../../variables";
 import { RSContext } from "../Context/RSContextProvider";
+import { errormessage } from "../common/formcss";
+import { useNavigation } from "@react-navigation/native";
 
 export default function DateCalendar() {
+  const navigation = useNavigation();
   const [crowdCapacity, setCrowdCapacity] = useState("");
   const [priceShow, setPriceShow] = useState("");
+  const [titleShow, setTitleShow] = useState("");
+  const [description, setDescription] = useState("");
+
+  const [errormsg, setErrormsg] = useState(null);
 
   const { emailAfterLogin } = useContext(RSContext);
 
@@ -33,7 +40,7 @@ export default function DateCalendar() {
   });
 
   const HandleSubmitAddShow = async () => {
-    const timestamp = selectedTimeStart; // Your timestamp in ISO 8601 format
+    const timestamp = selectedTimeStart;
     const date = new Date(timestamp);
 
     // Extract the hour, minute, and second
@@ -48,19 +55,35 @@ export default function DateCalendar() {
       StartTime: timeString,
       CrowdCapacity: crowdCapacity,
       Price: priceShow,
+      TitleShow: titleShow,
+      Description: description,
     };
 
-    try {
-      const response = await fetch(API_URL + "business/addShow", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedShowForm),
-      });
-      console.log("Send the all details to sql");
-    } catch (error) {
-      console.log("Failed to send");
+    console.log(updatedShowForm.CrowdCapacity);
+    console.log(updatedShowForm.TitleShow);
+
+    if (
+      updatedShowForm.SelectedDate == "1900/01/01" ||
+      updatedShowForm.CrowdCapacity == "" ||
+      updatedShowForm.TitleShow == ""
+    ) {
+      console.log("Not send the details");
+      setErrormsg("all fields are requird/ something went wrong");
+      return;
+    } else {
+      try {
+        const response = await fetch(API_URL + "business/addShow", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedShowForm),
+        });
+        console.log("Send the all details to sql");
+        navigation.navigate("Upcoming");
+      } catch (error) {
+        setErrormsg("all fields are requird/ something went wrong");
+      }
     }
   };
 
@@ -110,6 +133,7 @@ export default function DateCalendar() {
           height: "100%",
         }}
       >
+        {errormsg ? <Text style={errormessage}>{errormsg}</Text> : null}
         <ScrollView>
           <View style={{ flex: 1, alignItems: "center" }}>
             <View
@@ -148,6 +172,19 @@ export default function DateCalendar() {
 
                 <View>
                   <View style={styles.detailsContainer}>
+                    <Text style={styles.titleShowAndDescription}>
+                      Title Of Show:
+                    </Text>
+                  </View>
+
+                  <View style={styles.detailsContainer}>
+                    <TextInput
+                      onChangeText={(val) => setTitleShow(val)}
+                      style={styles.inputTitle}
+                    />
+                  </View>
+
+                  <View style={styles.detailsContainer}>
                     <Text style={styles.crowd}>Crowd:</Text>
                     <Text style={styles.priceDetail}>Price:</Text>
                   </View>
@@ -162,6 +199,19 @@ export default function DateCalendar() {
                       onChangeText={(val) => setPriceShow(val)}
                       style={styles.inputDetails}
                       maxLength={5}
+                    />
+                  </View>
+
+                  <View style={styles.detailsContainer}>
+                    <Text style={styles.titleShowAndDescription}>
+                      Description:
+                    </Text>
+                  </View>
+
+                  <View style={styles.detailsContainer}>
+                    <TextInput
+                      onChangeText={(val) => setDescription(val)}
+                      style={styles.inputTitle}
                     />
                   </View>
 
@@ -300,11 +350,28 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 18,
   },
+  titleShowAndDescription: {
+    marginTop: 25,
+    fontSize: 18,
+  },
   inputDetails: {
     borderWidth: 1,
     borderRadius: 10,
     borderColor: "#222",
     width: 150,
+    height: 50,
+    marginLeft: 20,
+    marginRight: 12,
+    marginTop: 15,
+    backgroundColor: "#fff",
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  inputTitle: {
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: "#222",
+    width: 340,
     height: 50,
     marginLeft: 20,
     marginRight: 12,

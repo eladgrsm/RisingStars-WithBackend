@@ -10,6 +10,7 @@ export default function RSContextProvider(props) {
   const [showMainArtistScreen, setShowMainArtistScreen] = useState(false);
   const [showMainBusinessScreen, setShowMainBusinessScreen] = useState(false);
   const [emailAfterLogin, setEmailAfterLogin] = useState("");
+  
 
   return (
     <RSContext.Provider
