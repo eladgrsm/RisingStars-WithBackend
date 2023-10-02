@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import WeeklyCalendar from "./AfterLoginArtists/WeeklyCalendar";
 
 export default function MainArtistScreen() {
-  const nav = useNavigation();
+  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -23,8 +23,13 @@ export default function MainArtistScreen() {
       <View style={styles.TodayShow}>
         <Text>Today Show:</Text>
       </View>
-      <Text style={styles.availableShow}>Click here to see available shows:</Text>
-      <TouchableOpacity style={styles.centeredCircleButton}>
+      <Text style={styles.availableShow}>
+        Click here to see available shows:
+      </Text>
+      <TouchableOpacity
+        style={styles.centeredCircleButton}
+        onPress={() => navigation.navigate("Shows")}
+      >
         <View style={styles.circleImage}>
           <Image
             source={require("../assets/Golden_star.svg.png")}
@@ -106,5 +111,5 @@ const styles = StyleSheet.create({
   },
   availableShow: {
     marginTop: 80,
-  }
+  },
 });

@@ -10,7 +10,7 @@ export default function RSContextProvider(props) {
   const [showMainArtistScreen, setShowMainArtistScreen] = useState(false);
   const [showMainBusinessScreen, setShowMainBusinessScreen] = useState(false);
   const [emailAfterLogin, setEmailAfterLogin] = useState("");
-  
+  const [emailDates, setEmailDates] = useState("");
 
   return (
     <RSContext.Provider
@@ -29,6 +29,8 @@ export default function RSContextProvider(props) {
         setEmailAfterLogin,
         showMainBusinessScreen,
         setShowMainBusinessScreen,
+        setEmailDates,
+        emailDates,
       }}
     >
       {props.children}

@@ -111,5 +111,32 @@ namespace BackendRS.Controllers
             }
         }
 
+
+
+        [HttpGet]
+        [Route("getinfo")]
+        public IHttpActionResult GetBusinessOwnerInfo()
+        {
+            try
+            {
+                List<BusinessOwnerInfo> businessOwnerInfoData = _businessService.GetBusinessOwnerInfo();
+
+                if (businessOwnerInfoData != null && businessOwnerInfoData.Count > 0)
+                {
+                    return Ok(businessOwnerInfoData);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine(ex.ToString());
+                return InternalServerError();
+            }
+        }
+
     }
 }

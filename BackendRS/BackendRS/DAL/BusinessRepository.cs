@@ -132,6 +132,56 @@ namespace BackendRS.DAL
             return businessData;
         }
 
+
+        public List<BusinessOwnerInfo> GetBusinessOwnerInfo()
+        {
+            List<BusinessOwnerInfo> businessOwnerInfoData = new List<BusinessOwnerInfo>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetBusinessOwnerInfo", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string userEmail = reader.GetString(0);
+                                string userLogo = reader.GetString(1);
+                                string userBusinessName = reader.GetString(2);
+                                string userCity = reader.GetString(3);
+
+                                BusinessOwnerInfo businessOwnerDetail = new BusinessOwnerInfo
+                                {
+                                    UserEmail = userEmail,
+                                    UserLogo = userLogo,
+                                    UserBusinessName = userBusinessName,
+                                    UserCity = userCity
+                                };
+
+                                businessOwnerInfoData.Add(businessOwnerDetail);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception as needed
+                Console.WriteLine(ex.ToString());
+            }
+
+            return businessOwnerInfoData;
+        }
+
+
+
+
         public List<ShowDetails> GetShowDetailsByEmail(string email)
         {
             List<ShowDetails> showDetailsData = new List<ShowDetails>();
@@ -152,6 +202,7 @@ namespace BackendRS.DAL
                         {
                             while (reader.Read())
                             {
+                                int ShowId = reader.GetInt32(0);
                                 string SelectedDate = reader.GetDateTime(1).ToString("yyyy-MM-dd");
                                 string StartTime = reader.GetTimeSpan(2).ToString();
                                 int CrowdCapacity = reader.GetInt32(3);
@@ -160,9 +211,10 @@ namespace BackendRS.DAL
                                 string TitleShow = reader.GetString(6);
                                 string Description = reader.GetString(7);
 
-                                // Create a ShowDetails object or use a different class if needed
+                                // Create a ShowDetails object
                                 ShowDetails showDetail = new ShowDetails
                                 {
+                                    ShowId = ShowId,
                                     SelectedDate = SelectedDate,
                                     StartTime = StartTime,
                                     CrowdCapacity = CrowdCapacity,
@@ -180,11 +232,12 @@ namespace BackendRS.DAL
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                // Handle the exception appropriately (e.g., log or rethrow)
             }
 
             return showDetailsData;
         }
+
 
 
 

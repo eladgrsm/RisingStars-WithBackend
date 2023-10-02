@@ -19,9 +19,10 @@ import ProfilePageArtist from "./ProfilePageArtist";
 import MainArtistScreen from "./welcomeToRising/MainArtistScreen";
 import Profile from "./welcomeToRising/AfterLoginArtists/Profile";
 import Statics from "./welcomeToRising/AfterLoginArtists/Statics";
-import Help from "./welcomeToRising/AfterLoginArtists/Help";
+import Shows from "./welcomeToRising/AfterLoginArtists/Shows";
 import Logout from "./welcomeToRising/AfterLoginArtists/Logout";
 import MainBusinessScreen from "./welcomeToRising/AfterLoginBusiness/MainBusinessScreen";
+import DateAvailable from "./welcomeToRising/AfterLoginArtists/DateAvailable";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -43,7 +44,7 @@ function AppNavigator() {
       return (
         <Drawer.Navigator initialRouteName="MainArtistScreen">
           <Drawer.Screen
-            name="My Shows"
+            name="Main"
             component={MainArtistScreen}
             options={{
               headerShown: true,
@@ -68,14 +69,25 @@ function AppNavigator() {
             options={{ headerShown: true }}
           />
           <Drawer.Screen
-            name="Help"
-            component={Help}
+            name="Shows"
+            component={Shows}
             options={{ headerShown: true }}
           />
           <Drawer.Screen
             name="Logout"
             component={Logout}
             options={{ headerShown: true }}
+          />
+          <Drawer.Screen
+            name="DateAvailable"
+            component={DateAvailable}
+            options={{
+              drawerLabel: () => null,
+              drawerIcon: () => null,
+              drawerItemStyle: {
+                backgroundColor: "transparent", // Remove the background color
+              },
+            }}
           />
         </Drawer.Navigator>
       );
@@ -105,11 +117,6 @@ function AppNavigator() {
           <Drawer.Screen
             name="Upcoming"
             component={Statics}
-            options={{ headerShown: true }}
-          />
-          <Drawer.Screen
-            name="Help"
-            component={Help}
             options={{ headerShown: true }}
           />
           <Drawer.Screen

@@ -7,6 +7,7 @@ namespace BackendRS.Models
 {
     public class ShowDetails
     {
+        public int ShowId { get; set; }
         public string SelectedDate { get; set; }
         public string StartTime { get; set; }
         public int CrowdCapacity { get; set; }

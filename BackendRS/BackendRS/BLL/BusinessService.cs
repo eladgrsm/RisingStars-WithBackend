@@ -38,5 +38,10 @@ namespace BackendRS.BLL
         }
 
 
+        public List<BusinessOwnerInfo> GetBusinessOwnerInfo()
+        {
+            return _businessRepository.GetBusinessOwnerInfo();
+        }
+
     }
 }

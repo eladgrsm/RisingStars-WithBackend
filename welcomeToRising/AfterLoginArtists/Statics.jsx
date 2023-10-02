@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { API_URL } from "../../variables";
 import { RSContext } from "../Context/RSContextProvider";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Statics() {
   const [markedDates, setMarkedDates] = useState({});
@@ -12,52 +13,53 @@ export default function Statics() {
   const [showDetails, setShowDetails] = useState([]);
   const [loading, setLoading] = useState(true); // Added loading state
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(API_URL + "business/detailsShow", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            BusinessOwnerEmail: emailAfterLogin,
-          }),
-        });
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
-        if (response.ok) {
-          const data = await response.json();
+  const fetchData = async () => {
+    try {
+      const response = await fetch(API_URL + "business/detailsShow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          BusinessOwnerEmail: emailAfterLogin,
+        }),
+      });
 
-          if (data && data.length > 0) {
-            setShowDetails(data);
+      if (response.ok) {
+        const data = await response.json();
 
-            const markedDatesObject = {};
+        if (data && data.length > 0) {
+          setShowDetails(data);
 
-            data.forEach((item) => {
-              const date = item.SelectedDate;
-              markedDatesObject[date] = {
-                selected: true,
-                selectedColor: "red",
-              };
-            });
+          const markedDatesObject = {};
 
-            setMarkedDates(markedDatesObject);
-          }
-        } else {
-          console.error("Error fetching data:", response.status);
+          data.forEach((item) => {
+            const date = item.SelectedDate;
+            markedDatesObject[date] = {
+              selected: true,
+              selectedColor: "red",
+            };
+          });
+
+          setMarkedDates(markedDatesObject);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false); // Set loading to false regardless of success or failure
+      } else {
+        console.error("Error fetching data:", response.status);
       }
-    };
-
-    fetchData();
-  }, [emailAfterLogin]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false); // Set loading to false regardless of success or failure
+    }
+  };
 
   const onDayPress = (day) => {
-
     const formattedSelectedDate = day.dateString; // Format selected date as 'YYYY-MM-DD'
 
     const showsOnSelectedDate = showDetails
