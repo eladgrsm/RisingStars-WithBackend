@@ -317,6 +317,8 @@
     <Compile Include="Models\Business.cs" />
     <Compile Include="Models\BusinessOwnerInfo.cs" />
     <Compile Include="Models\CreditCards.cs" />
+    <Compile Include="Models\EmailRequest.cs" />
+    <Compile Include="Models\RequestStatus.cs" />
     <Compile Include="Models\ShowDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

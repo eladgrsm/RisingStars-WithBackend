@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Web;
 using System.Windows.Forms;
 
@@ -74,6 +76,37 @@ namespace BackendRS.DAL
                 return false;
             }
         }
+
+
+        public bool AddRequestShow(RequestStatus requestShowDetails)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand("AddRequestShow", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@SelectDate", requestShowDetails.SelectDate);
+                        command.Parameters.AddWithValue("@StartTime", requestShowDetails.StartTime);
+                        command.Parameters.AddWithValue("@PerformanceInfo", requestShowDetails.PerformanceInfo);
+                        command.Parameters.AddWithValue("@VideoLink", requestShowDetails.VideoLink);
+                        command.Parameters.AddWithValue("@BusinessOwnerEmail", requestShowDetails.BusinessOwnerEmail);
+                        command.Parameters.AddWithValue("@ArtistEmail", requestShowDetails.ArtistEmail);
+                        command.Parameters.AddWithValue("@StatusRequest", requestShowDetails.StatusRequest);
+                        command.Parameters.AddWithValue("@TitleShow", requestShowDetails.TitleShow);
+
+                        return command.ExecuteNonQuery() > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
 
         public List<Business> GetAllArtistData(string email)
         {
@@ -181,6 +214,65 @@ namespace BackendRS.DAL
 
 
 
+        public List<RequestStatus> GetRequestStatusByArtistEmail(string artistEmail)
+        {
+            List<RequestStatus> requestStatusList = new List<RequestStatus>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_config))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("GetRequestStatusByArtistEmail", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add(new SqlParameter("@ArtistEmail", artistEmail));
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string SelectDate = reader.GetDateTime(0).ToString("yyyy-MM-dd");
+                                string StartTime = reader.GetTimeSpan(1).ToString();
+                                string performanceInfo = reader.GetString(2);
+                                string videoLink = reader.GetString(3);
+                                string businessOwnerEmail = reader.GetString(4);
+                                string artistEmailResult = reader.GetString(5);
+                                string statusRequest = reader.GetString(6);
+                                string titleShow = reader.GetString(7);
+
+                                RequestStatus requestStatus = new RequestStatus
+                                {
+                                    SelectDate = SelectDate,
+                                    StartTime = StartTime,
+                                    PerformanceInfo = performanceInfo,
+                                    VideoLink = videoLink,
+                                    BusinessOwnerEmail = businessOwnerEmail,
+                                    ArtistEmail = artistEmailResult,
+                                    StatusRequest = statusRequest,
+                                    TitleShow = titleShow,
+                                };
+
+                                requestStatusList.Add(requestStatus);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle or log the exception here
+                Console.WriteLine(ex.ToString());
+            }
+
+            return requestStatusList;
+        }
+
+
+
+
 
         public List<ShowDetails> GetShowDetailsByEmail(string email)
         {
@@ -236,6 +328,45 @@ namespace BackendRS.DAL
             }
 
             return showDetailsData;
+        }
+
+
+
+        public bool SendEmail(string toEmail, string subject, string body,string fromEmail)
+        {
+            try
+            {
+                // SMTP server settings (e.g., Gmail)
+                string smtpServer = "smtp.gmail.com";
+                int smtpPort = 587;
+                string smtpUsername = fromEmail; // Your Gmail email address
+                string smtpPassword = "ayca dsmy ihlf zezv"; // Your Gmail password
+
+                using (SmtpClient smtpClient = new SmtpClient(smtpServer))
+                {
+                    smtpClient.Port = smtpPort;
+                    smtpClient.Credentials = new NetworkCredential(smtpUsername, smtpPassword);
+                    smtpClient.EnableSsl = true;
+
+                    using (MailMessage mailMessage = new MailMessage())
+                    {
+                        mailMessage.From = new MailAddress(smtpUsername);
+                        mailMessage.To.Add(toEmail);
+                        mailMessage.Subject = subject;
+                        mailMessage.Body = body;
+
+                        smtpClient.Send(mailMessage);
+
+                        return true; // Email sent successfully
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, log it, or return false if sending fails
+                Console.WriteLine("Error sending email: " + ex.Message);
+                return false;
+            }
         }
 
 

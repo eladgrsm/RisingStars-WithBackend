@@ -31,10 +31,45 @@ namespace BackendRS.BLL
             return _businessRepository.AddSHow(showDetails);
         }
 
+        public bool AddRequestShow(RequestStatus requestShowDetails)
+        {
+            return _businessRepository.AddRequestShow(requestShowDetails);
+        }
+
+        public List<RequestStatus> GetRequestStatusByArtistEmail(string email)
+        {
+            return _businessRepository.GetRequestStatusByArtistEmail(email);
+        }
+
 
         public List<ShowDetails> GetShowDetailsByEmail(string email)
         {
             return _businessRepository.GetShowDetailsByEmail(email);
+        }
+
+
+        public bool SendEmail(string toEmail, string subject, string body, string fromEmail)
+        {
+            if (!IsValidEmail(toEmail))
+            {
+                return false;
+            }
+
+            return _businessRepository.SendEmail(toEmail, subject, body,fromEmail);
+        }
+
+        // Helper method to validate an email address.
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 

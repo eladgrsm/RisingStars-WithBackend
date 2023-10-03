@@ -81,6 +81,7 @@ export default function DateCalendar() {
         });
         console.log("Send the all details to sql");
         navigation.navigate("Upcoming");
+        
       } catch (error) {
         setErrormsg("all fields are requird/ something went wrong");
       }

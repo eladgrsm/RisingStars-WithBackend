@@ -88,6 +88,28 @@ namespace BackendRS.Controllers
 
 
         [HttpPost]
+        [Route("sendRequest")]
+        public IHttpActionResult AddRequestShow(RequestStatus requestShowDetails)
+        {
+            if (requestShowDetails == null)
+            {
+                return BadRequest("Details are missing.");
+            }
+
+            bool result = _businessService.AddRequestShow(requestShowDetails);
+
+            if (result)
+            {
+                return Ok("Request send successfully.");
+            }
+            else
+            {
+                return InternalServerError();
+            }
+        }
+
+
+        [HttpPost]
         [Route("detailsShow")]
         public IHttpActionResult ShowDetails(ShowDetails showDetails)
         {
@@ -104,6 +126,27 @@ namespace BackendRS.Controllers
             if (showData.Count > 0)
             {
                 return Ok(showData);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        [Route("getRequestsData")]
+        public IHttpActionResult GetRequestStatusByArtistEmail(RequestStatus RequestStatus)
+        {
+            if (string.IsNullOrEmpty(RequestStatus.ArtistEmail))
+            {
+                return BadRequest("Email parameter is missing.");
+            }
+
+            List<RequestStatus> requestData = _businessService.GetRequestStatusByArtistEmail(RequestStatus.ArtistEmail);
+
+            if (requestData.Count > 0)
+            {
+                return Ok(requestData);
             }
             else
             {
@@ -134,6 +177,29 @@ namespace BackendRS.Controllers
             {
                 // Handle the exception as needed
                 Console.WriteLine(ex.ToString());
+                return InternalServerError();
+            }
+        }
+
+
+
+        [HttpPost]
+        [Route("sendEmail")]
+        public IHttpActionResult SendEmail(EmailRequest emailRequest)
+        {
+            if (emailRequest == null || string.IsNullOrEmpty(emailRequest.ToEmail) || string.IsNullOrEmpty(emailRequest.Subject) || string.IsNullOrEmpty(emailRequest.Body) || string.IsNullOrEmpty(emailRequest.FromEmail))
+            {
+                return BadRequest("Email request data is missing.");
+            }
+
+            bool result = _businessService.SendEmail(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body, emailRequest.FromEmail);
+
+            if (result)
+            {
+                return Ok("Email sent successfully.");
+            }
+            else
+            {
                 return InternalServerError();
             }
         }

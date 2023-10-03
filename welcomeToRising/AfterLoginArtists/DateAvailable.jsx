@@ -9,12 +9,14 @@ import {
   StyleSheet,
   TextInput,
   KeyboardAvoidingView,
+  Alert,
+  Linking,
 } from "react-native";
 import { API_URL } from "../../variables";
 import { RSContext } from "../Context/RSContextProvider";
 
 export default function DateAvailable() {
-  const { emailDates } = useContext(RSContext);
+  const { emailDates, emailAfterLogin } = useContext(RSContext);
 
   const [showData, setShowData] = useState([]);
   const [selectedShow, setSelectedShow] = useState(null);
@@ -22,6 +24,8 @@ export default function DateAvailable() {
   const [performanceInfo, setPerformanceInfo] = useState("");
   const [videoLink, setVideoLink] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [titleShow, setTitleShow] = useState("");
 
   // Define the fetchShowDataByEmail function
   const fetchShowDataByEmail = async () => {
@@ -59,6 +63,7 @@ export default function DateAvailable() {
 
   const handleShowDetails = (show) => {
     setSelectedShow(show);
+    console.log(show.TitleShow);
     setModalVisible(true);
   };
 
@@ -70,18 +75,95 @@ export default function DateAvailable() {
     setSelectedDate(null); // Clear selected date when closing modal
   };
 
-  const handleSubmit = () => {
-    // Handle submit logic here
-    // You can access performanceInfo and videoLink to send them with the submission
-    // For example, send a request to update the show details
-    console.log("Performance Info:", performanceInfo);
-    console.log("Video Link:", videoLink);
-    closeModal(); // Close the modal after submission
+  const handleSubmit = async () => {
+    try {
+      // Check if all required fields are filled
+      if (!performanceInfo || !videoLink || !selectedShow) {
+        console.error("Please fill in all required fields");
+        return;
+      }
+
+      const requestData = {
+        SelectDate: selectedShow.SelectedDate,
+        StartTime: selectedShow.StartTime,
+        PerformanceInfo: performanceInfo,
+        VideoLink: videoLink,
+        BusinessOwnerEmail: emailDates, // You can access the business owner email from the context
+        ArtistEmail: emailAfterLogin, // You may need to access this information from your selectedShow data
+        StatusRequest: "Pending", // Set the status as "Pending" as per your requirements
+        TitleShow: titleShow,
+      };
+
+      const sendEmailData = {
+        ToEmail: emailDates,
+        FromEmail: emailAfterLogin,
+        Subject: "Send Request for show: " + titleShow,
+        Body:
+          "you got a request from " +
+          emailAfterLogin +
+          " you can see the datils on the app",
+      };
+
+      const response = await fetch(API_URL + "business/sendRequest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Handle successful submission here, e.g., show a success message or update the UI
+      console.log("Show request submitted successfully");
+
+      const responseEmail = await fetch(API_URL + "business/sendEmail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sendEmailData),
+      });
+
+      if (!responseEmail.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      if (responseEmail.ok) {
+        Alert.alert("Datils sent successefully");
+        console.log("Email send");
+      }
+
+      closeModal(); // Close the modal after successful submission
+
+      // Mark the selected date as unavailable with an orange background color
+      setSelectedDates([...selectedDates, selectedShow.ShowId]);
+
+      // Show a success message
+      Alert.alert(
+        "Success",
+        "Your show request has been submitted successfully."
+      );
+    } catch (error) {
+      console.error("Error submitting show request:", error);
+      // Handle the error, e.g., show an error message to the user
+
+      // Show an error message
+      Alert.alert(
+        "Error",
+        "There was an error submitting your show request. Please try again later."
+      );
+    }
   };
 
   const handleDateClick = (item) => {
-    setSelectedDate(item.ShowId);
-    handleShowDetails(item);
+    if (!selectedDates.includes(item.ShowId)) {
+      setSelectedDate(item.ShowId);
+      setTitleShow(item.TitleShow);
+      handleShowDetails(item);
+    }
   };
 
   return (
@@ -95,6 +177,9 @@ export default function DateAvailable() {
               style={[
                 styles.dateContainer,
                 selectedDate === item.ShowId && { backgroundColor: "green" },
+                selectedDates.includes(item.ShowId) && {
+                  backgroundColor: "orange",
+                },
               ]}
             >
               <Text style={styles.dateText}>Date: {item.SelectedDate}</Text>
